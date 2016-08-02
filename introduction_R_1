@@ -85,3 +85,4 @@ final <- exo1[exo1$Categorie=="Boissons" & exo1$Prix<100 | exo1$Ville=="Lyon" & 
 
 ##Ensuite j'ai compté le nombre d'observations de ma nouvelle liste "final"
 nrow(final)
+[1] 16
