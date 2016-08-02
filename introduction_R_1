@@ -1,0 +1,87 @@
+## Quetion B :  Importer le fichier « produits.xlsx » dans un data.frame en utilisant le package « xlsx »
+## Ayant un problème d'installation du package xlsx sur ma version de R, j'ai installé un package équivalent readxl, qui fonctionne parfaitement.
+exo1 <- read_excel("d:/SISE - Remise à niveau/theme 3/sources/Produits.xlsx")
+ 
+
+# Question C :  Afficher un résumé des données [cf. print(summary(.))]. Notez bien les noms de variables !!! 
+print(summary(exo1))
+
+## Voici le résultat obtenu : 
+## Nom             Categorie           Origine             Ville                Prix             Stock           Valeur     
+##Length:77          Length:77          Length:77          Length:77          Min.   :  12.50   Min.   : 0.00   Min.   :    0  
+## Class :character   Class :character   Class :character   Class :character   1st Qu.:  66.25   1st Qu.: 0.00   1st Qu.:    0  
+## Mode  :character   Mode  :character   Mode  :character   Mode  :character   Median :  97.50   Median :10.00   Median :  900  
+## Mean   : 144.33   Mean   :12.47   Mean   : 1508  
+##3rd Qu.: 166.25   3rd Qu.:25.00   3rd Qu.: 1950  
+##Max.   :1317.50   Max.   :30.00   Max.   :19763 
+
+## Question D : Extraire le Nom, Catégorie, Origine  et Prix des produits, pour :
+## 1. Catégorie = boissons :
+exo1[exo1$Categorie=="Boissons", c("Nom", "Categorie", "Origine", "Prix")]
+## Resultat : 
+##                       Nom Categorie   Origine    Prix
+##6                       Chai  Boissons       CEE   90.00
+##7                      Chang  Boissons Exterieur   95.00
+##8           Chartreuse verte  Boissons Exterieur   90.00
+##12             Cote de Blaye  Boissons       CEE 1317.50
+##22        Guarana Fantastica  Boissons Exterieur   22.50
+##29               Ipoh Coffee  Boissons Exterieur  230.00
+##32              Lakkalikoori  Boissons       CEE   90.00
+##33 Laughing Lumberjack Lager  Boissons       CEE   70.00
+##46             Outback Lager  Boissons Exterieur   75.00
+##54      Rhonbrau Klosterbier  Boissons       CEE   38.75
+##58             Sasquatch Ale  Boissons       CEE   70.00
+##66            Steeleye Stout  Boissons Exterieur   90.00
+
+## 2. Catégorie = boissons et prix >100 
+exo1[exo1$Categorie=="Boissons" & exo1$Prix>100, c("Nom", "Categorie", "Origine", "Prix")]
+## Résultat : 
+##             Nom Categorie   Origine   Prix
+##12 Cote de Blaye  Boissons       CEE 1317.5
+##29   Ipoh Coffee  Boissons Exterieur  230.0
+
+## 3. Catégorie = boissons et origine=CEE et prix > 100 
+exo1[exo1$Categorie=="Boissons" & exo1$Prix>100 & exo1$Origine=="CEE", c("Nom", "Categorie", "Origine", "Prix")]
+## Resultat
+##              Nom Categorie Origine   Prix
+## 12 Cote de Blaye  Boissons     CEE 1317.5
+
+## 4. Catégorie = boissons ou catégorie = condiments 
+exo1[exo1$Categorie=="Boissons" | exo1$Categorie=="Condiments", c("Nom", "Categorie", "Origine", "Prix")]
+
+## 5. (Catégorie = boissons et origine = CEE) OU (catégorie = condiment) 
+exo1[exo1$Categorie=="Boissons" & exo1$Origine=="CEE" | exo1$Categorie=="Condiments", c("Nom", "Categorie", "Origine", "Prix")]
+
+## 6. (Catégorie = viande ET origine = CEE) OU (catégorie = condiment ET origine = extérieur) 
+exo1[exo1$Categorie=="Viandes" & exo1$Origine=="CEE" | exo1$Categorie=="Condiments" & exo1$Origine=="Exterieur", c("Nom", "Categorie", "Origine", "Prix")]
+
+## 7. Prix> 70 et prix <=100 
+exo1[exo1$Prix>70 & exo1$Prix<=100, c("Nom", "Categorie", "Origine", "Prix")]
+
+## 8. Lister les aliments dont le prix est compris entre 100 FF et 200 FF, et qui sont des « viandes » 
+exo1[exo1$Prix>=100 & exo1$Prix<=200 & exo1$Categorie=="Viandes", c("Nom", "Categorie", "Origine", "Prix")]
+
+## 9. Lister les 15 produits les moins chers 
+exo1[head(order(exo1$Prix),15), c("Nom", "Categorie", "Origine","Prix")]
+## la demande est : "Dans Exo1, sortir les 15 premières valeur (head et 15) avec un ordre d'indexation croissant (order) dans la variable Prix (exo1$Prix)
+##  et m'afficher le résultat en m'indiquant le nom, la catégorie, l'origine et le prix (c("Nom", "Categorie", "Origine","Prix")).
+
+## 10. Calculer la moyenne de prix des boissons distribuées à Lyon 
+## J'ai commencé par faire un filtre avec les conditions "Categorie = boissons" et "ville = Lyon".
+f <- exo1[exo1$Categorie=="Boissons" & exo1$Ville=="Lyon", c("Nom", "Categorie", "Origine","Ville", "Prix")]
+## Ensuite j'ai calculé la moyenne par rapport à ma liste filtrée
+## 1ère méthode
+mean(f$Prix)
+## [1] 76.94444
+
+## 2ème méthode
+tapply(f$Prix, INDEX = f$Categorie, mean)
+## Boissons 
+## 76.94444 
+
+## 11. Quel est le nombre de produits correspondants à la condition : (catégorie = boissons et prix <100) OU (ville = lyon et stock > 20) 
+## Tout d'abord j'ai commencé par filtré les données en fonction des conditions imposées ci-dessus
+final <- exo1[exo1$Categorie=="Boissons" & exo1$Prix<100 | exo1$Ville=="Lyon" & exo1$Stock>20, c("Nom", "Categorie","Ville", "Stock", "Origine", "Prix")]
+
+##Ensuite j'ai compté le nombre d'observations de ma nouvelle liste "final"
+nrow(final)
